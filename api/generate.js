@@ -13,21 +13,16 @@ export default async function handler(req, res) {
   const apiKey = rawKey.trim();
   const prompt = `Act as an expert Instagram creator. Generate 3 viral hooks, a crisp caption with line-breaks, and 15 targeted hashtags for a reel about "${topic}" in the niche "${niche}". Keep it high-retention, engaging, and clear.`;
 
-  // Check if it's the new AQ Auth key or classic AIza key
-  const isAuthKey = apiKey.startsWith('AQ');
-  const url = isAuthKey
-    ? 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent'
-    : `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-
-  const headers = { 'Content-Type': 'application/json' };
-  if (isAuthKey) {
-    headers['Authorization'] = `Bearer ${apiKey}`;
-  }
+  // Standard v1 endpoint for gemini-1.5-flash
+  const url = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent';
 
   try {
     const response = await fetch(url, {
       method: 'POST',
-      headers: headers,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }]
       })
